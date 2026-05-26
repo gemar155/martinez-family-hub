@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Martinez Family Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#0f0f13; --bg2:#16161c; --bg3:#1e1e26; --surface:#22222e; --surface2:#2a2a38;
+  --border:rgba(255,255,255,0.07); --border2:rgba(255,255,255,0.13);
+  --text:#f0effe; --text2:#9896b0; --text3:#5c5a72;
+  --blue:#6b8afd;   --blue-bg:rgba(107,138,253,0.12);
+  --purple:#a78bfa; --purple-bg:rgba(167,139,250,0.12);
+  --pink:#f472b6;   --pink-bg:rgba(244,114,182,0.12);
+  --green:#34d399;  --green-bg:rgba(52,211,153,0.1);
+  --amber:#fbbf24;  --amber-bg:rgba(251,191,36,0.1);
+  --teal:#2dd4bf;   --teal-bg:rgba(45,212,191,0.1);
+  --red:#f87171;    --red-bg:rgba(248,113,113,0.1);
+  --r:14px; --rs:8px; --rp:999px; --font:'DM Sans',sans-serif; --mono:'DM Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;-webkit-tap-highlight-color:transparent}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+#app{max-width:680px;margin:0 auto;padding:0 16px 88px}
+/* Header */
+.hdr{padding:28px 0 20px;display:flex;align-items:flex-start;justify-content:space-between}
+.hdr h1{font-size:24px;font-weight:600;letter-spacing:-.5px;line-height:1.2}
+.hdr p{font-size:11px;color:var(--text3);margin-top:4px;letter-spacing:.06em;text-transform:uppercase;font-weight:500}
+.week-chip{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rp);padding:5px 12px;font-size:11px;color:var(--text2);font-family:var(--mono);white-space:nowrap;margin-top:4px}
+/* Sections */
+.slabel{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);margin:24px 0 10px}
+/* Child cards */
+.cgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.ccard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 12px;cursor:pointer;transition:border-color .2s,transform .15s;position:relative;overflow:hidden}
+.ccard::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--r) var(--r) 0 0;opacity:0;transition:opacity .2s}
+.ccard.z::before{background:var(--blue)}
+.ccard.s::before{background:var(--purple)}
+.ccard.a::before{background:var(--pink)}
+.ccard.open{border-color:var(--border2);transform:translateY(-1px)}
+.ccard.open::before{opacity:1}
+.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;margin-bottom:10px}
+.av.z{background:var(--blue-bg);color:var(--blue)}
+.av.s{background:var(--purple-bg);color:var(--purple)}
+.av.a{background:var(--pink-bg);color:var(--pink)}
+.cname{font-size:13px;font-weight:600;color:var(--text)}
+.cage{font-size:10px;color:var(--text3);margin-bottom:10px}
+.ptop{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+.ptop span{font-size:10px;color:var(--text3)}
+.ptop strong{font-size:11px;font-family:var(--mono);color:var(--text2)}
+.bar{height:3px;background:var(--surface2);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.bfill{height:100%;border-radius:2px;transition:width .8s cubic-bezier(.4,0,.2,1)}
+.bfill.z{background:var(--blue)}.bfill.s{background:var(--purple)}.bfill.a{background:var(--pink)}
+.prow{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.plabel{font-size:10px;color:var(--text3)}
+.badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:var(--rp);letter-spacing:.03em}
+.badge.on{background:var(--green-bg);color:var(--green)}
+.badge.off{background:var(--red-bg);color:var(--red)}
+.balrow{display:flex;align-items:baseline;padding-top:8px;border-top:1px solid var(--border);margin-top:4px}
+.ballabel{font-size:10px;color:var(--text3)}
+.balval{font-size:15px;font-weight:600;font-family:var(--mono);color:var(--green);margin-left:auto}
+/* Detail panel */
+.dpanel{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-top:8px;display:none;animation:sd .2s ease}
+.dpanel.open{display:block}
+@keyframes sd{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+.dtitle{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.ci{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+.ci:last-child{border-bottom:none}
+.ck{width:17px;height:17px;border-radius:4px;border:1.5px solid var(--border2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--green);font-weight:700}
+.ck.done{border-color:var(--green);background:var(--green-bg)}
+.ct{font-size:12px;color:var(--text)}
+.cf{font-size:10px;color:var(--text3);margin-left:auto;white-space:nowrap}
+/* Submit buttons */
+.sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.sbtn{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:14px 10px;cursor:pointer;text-align:center;transition:all .2s;text-decoration:none;display:block}
+.sbtn:hover{border-color:var(--border2);background:var(--surface);transform:translateY(-1px)}
+.sicon{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;margin:0 auto 9px}
+.stitle{font-size:11px;font-weight:600;color:var(--text);margin-bottom:2px}
+.ssub{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em}
+/* Filter chips */
+.frow{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap}
+.fchip{background:var(--surface);border:1px solid var(--border);border-radius:var(--rp);padding:5px 13px;font-size:11px;font-weight:500;color:var(--text2);cursor:pointer;transition:all .15s;white-space:nowrap}
+.fchip.on{background:var(--blue-bg);border-color:var(--blue);color:var(--blue)}
+/* Gig cards */
+.glist{display:flex;flex-direction:column;gap:7px}
+.gcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:12px 14px;display:flex;align-items:center;gap:11px;transition:border-color .15s}
+.gcard:hover{border-color:var(--border2)}
+.gcard.claimed{opacity:.5}
+.gdot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.gdot.small{background:var(--blue)}.gdot.medium{background:var(--amber)}.gdot.large{background:var(--pink)}
+.ginfo{flex:1;min-width:0}
+.gname{font-size:12px;font-weight:500;color:var(--text)}
+.gmeta{font-size:10px;color:var(--text3);margin-top:1px}
+.gright{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.gprice{font-size:13px;font-weight:600;font-family:var(--mono);color:var(--green)}
+.schip{font-size:9px;font-weight:600;padding:2px 8px;border-radius:var(--rp);letter-spacing:.03em}
+.schip.open{background:var(--green-bg);color:var(--green)}
+.schip.cz{background:var(--blue-bg);color:var(--blue)}
+.schip.cs{background:var(--purple-bg);color:var(--purple)}
+.schip.ca{background:var(--pink-bg);color:var(--pink)}
+/* Section headers in gig list */
+.gsec{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:14px 0 6px;color:var(--text3)}
+.gsec:first-child{padding-top:0}
+/* Brain gigs */
+.bcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rs);padding:13px 14px;display:flex;align-items:flex-start;gap:11px;margin-bottom:7px}
+.bicon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.binfo{flex:1;min-width:0}
+.bname{font-size:12px;font-weight:500;color:var(--amber)}
+.bdesc{font-size:10px;color:var(--text3);margin-top:3px;line-height:1.5}
+.breward{font-size:13px;font-weight:600;font-family:var(--mono);color:var(--green);margin-left:auto;flex-shrink:0}
+.bcat{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;padding:16px 0 8px;color:var(--text3)}
+.bcat:first-child{padding-top:0}
+/* Savings */
+.savcards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.savcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px 12px;text-align:center}
+.savname{font-size:11px;font-weight:600;margin-bottom:4px}
+.savamt{font-size:20px;font-weight:600;font-family:var(--mono);color:var(--green)}
+.savsub{font-size:9px;color:var(--text3);margin-top:3px}
+/* Savings match */
+.matchcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:16px}
+.matchhdr{font-size:12px;font-weight:600;color:var(--amber);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.matchrow{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.matchrow:last-child{border-bottom:none}
+.matchmile{color:var(--text2)}
+.matchval{color:var(--green);font-weight:600;font-family:var(--mono)}
+/* Payout history */
+.phist{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.prow2{display:flex;align-items:center;padding:10px 14px;border-bottom:1px solid var(--border);font-size:12px}
+.prow2:last-child{border-bottom:none}
+.pwho{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;margin-right:10px;flex-shrink:0}
+.pwhat{color:var(--text);flex:1;font-size:12px}
+.pdate{font-size:10px;color:var(--text3);margin-right:12px;font-family:var(--mono)}
+.pamt{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--green)}
+/* Bottom nav */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:rgba(15,15,19,.94);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom)}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 0 7px;cursor:pointer;border:none;background:none;color:var(--text3);font-family:var(--font);transition:color .15s;gap:3px}
+.ni.on{color:var(--blue)}
+.nicon{font-size:19px;line-height:1}
+.nlabel{font-size:9px;font-weight:500;letter-spacing:.03em}
+/* Pages */
+.page{display:none}.page.on{display:block}
+/* API banner */
+.abanner{background:var(--amber-bg);border:1px solid rgba(251,191,36,.2);border-radius:var(--rs);padding:10px 13px;font-size:11px;color:var(--amber);margin-bottom:14px;line-height:1.6;display:none}
+.abanner.show{display:block}
+/* Empty state */
+.empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- HOME -->
+<div class="page on" id="pg-home">
+  <div class="hdr">
+    <div><h1>Martinez<br>Family Hub</h1><p>Responsibility · Growth · Ownership</p></div>
+    <div class="week-chip" id="week-lbl">Week —</div>
+  </div>
+  <div class="abanner" id="api-banner"><strong>Demo mode.</strong> Add your API key and Sheet ID at the top of this file to load live data from Google Sheets.</div>
+  <div class="slabel">This week</div>
+  <div class="cgrid">
+    <div class="ccard z" id="card-z" onclick="toggleDetail('z')">
+      <div class="av z">Z</div>
+      <div class="cname">Zachary</div><div class="cage">13</div>
+      <div class="ptop"><span>Chores</span><strong id="ch-z">0/7</strong></div>
+      <div class="bar"><div class="bfill z" id="bar-z" style="width:0%"></div></div>
+      <div class="prow"><span class="plabel">Privileges</span><span class="badge off" id="priv-z">Off</span></div>
+      <div class="balrow"><span class="ballabel">Balance</span><span class="balval" id="bal-z">$0.00</span></div>
+    </div>
+    <div class="ccard s" id="card-s" onclick="toggleDetail('s')">
+      <div class="av s">S</div>
+      <div class="cname">Sophia</div><div class="cage">12</div>
+      <div class="ptop"><span>Chores</span><strong id="ch-s">0/5</strong></div>
+      <div class="bar"><div class="bfill s" id="bar-s" style="width:0%"></div></div>
+      <div class="prow"><span class="plabel">Privileges</span><span class="badge off" id="priv-s">Off</span></div>
+      <div class="balrow"><span class="ballabel">Balance</span><span class="balval" id="bal-s">$0.00</span></div>
+    </div>
+    <div class="ccard a" id="card-a" onclick="toggleDetail('a')">
+      <div class="av a">A</div>
+      <div class="cname">Alyssa</div><div class="cage">10</div>
+      <div class="ptop"><span>Chores</span><strong id="ch-a">0/4</strong></div>
+      <div class="bar"><div class="bfill a" id="bar-a" style="width:0%"></div></div>
+      <div class="prow"><span class="plabel">Privileges</span><span class="badge off" id="priv-a">Off</span></div>
+      <div class="balrow"><span class="ballabel">Balance</span><span class="balval" id="bal-a">$0.00</span></div>
+    </div>
+  </div>
+  <div class="dpanel" id="dp-z"><div class="dtitle">Zachary's chores this week</div><div id="cl-z"></div></div>
+  <div class="dpanel" id="dp-s"><div class="dtitle">Sophia's chores this week</div><div id="cl-s"></div></div>
+  <div class="dpanel" id="dp-a"><div class="dtitle">Alyssa's chores this week</div><div id="cl-a"></div></div>
+
+  <div class="slabel">Submit work</div>
+  <div class="sgrid">
+    <a class="sbtn" id="lnk-chores" href="#" target="_blank">
+      <div class="sicon" style="background:var(--green-bg)">✅</div>
+      <div class="stitle">Chore check-in</div><div class="ssub">Required · unpaid</div>
+    </a>
+    <a class="sbtn" id="lnk-gigs" href="#" target="_blank">
+      <div class="sicon" style="background:var(--blue-bg)">🔧</div>
+      <div class="stitle">Regular gig</div><div class="ssub">Optional · paid</div>
+    </a>
+    <a class="sbtn" id="lnk-brain" href="#" target="_blank">
+      <div class="sicon" style="background:var(--amber-bg)">🧠</div>
+      <div class="stitle">Brain gig</div><div class="ssub">Optional · paid</div>
+    </a>
+  </div>
+</div>
+
+<!-- GIGS -->
+<div class="page" id="pg-gigs">
+  <div class="hdr"><div><h1>Regular Gigs</h1><p>Optional · paid physical work</p></div></div>
+  <div class="frow">
+    <div class="fchip on" onclick="filterGigs('all',this)">All</div>
+    <div class="fchip" onclick="filterGigs('open',this)">Open only</div>
+    <div class="fchip" onclick="filterGigs('small',this)">Small $1–3</div>
+    <div class="fchip" onclick="filterGigs('medium',this)">Medium $4–7</div>
+    <div class="fchip" onclick="filterGigs('large',this)">Large $8–15</div>
+  </div>
+  <div class="glist" id="gig-list"></div>
+</div>
+
+<!-- BRAIN -->
+<div class="page" id="pg-brain">
+  <div class="hdr"><div><h1>Brain Gigs</h1><p>Learn · grow · earn</p></div></div>
+  <div class="frow" id="brain-filters"></div>
+  <div id="brain-list"></div>
+</div>
+
+<!-- SAVINGS -->
+<div class="page" id="pg-savings">
+  <div class="hdr"><div><h1>Savings</h1><p>Earned · banked · matched</p></div></div>
+  <div class="slabel">Current balances</div>
+  <div class="savcards">
+    <div class="savcard"><div class="savname" style="color:var(--blue)">Zachary</div><div class="savamt" id="sv-z">$0.00</div><div class="savsub">balance</div></div>
+    <div class="savcard"><div class="savname" style="color:var(--purple)">Sophia</div><div class="savamt" id="sv-s">$0.00</div><div class="savsub">balance</div></div>
+    <div class="savcard"><div class="savname" style="color:var(--pink)">Alyssa</div><div class="savamt" id="sv-a">$0.00</div><div class="savsub">balance</div></div>
+  </div>
+  <div class="slabel">Savings match program</div>
+  <div class="matchcard">
+    <div class="matchhdr">💰 Save more, earn more</div>
+    <div class="matchrow"><span class="matchmile">Save $50</span><span class="matchval">+$5 bonus (10% match)</span></div>
+    <div class="matchrow"><span class="matchmile">Save $100</span><span class="matchval">+$10 bonus (10% match)</span></div>
+    <div class="matchrow"><span class="matchmile">Save $200</span><span class="matchval">+$20 bonus (10% match)</span></div>
+  </div>
+  <div class="slabel">Recent payouts</div>
+  <div class="phist" id="payout-hist"></div>
+</div>
+
+</div>
+
+<nav class="bnav">
+  <button class="ni on" onclick="nav('home',this)"><span class="nicon">🏠</span><span class="nlabel">Home</span></button>
+  <button class="ni" onclick="nav('gigs',this)"><span class="nicon">🔧</span><span class="nlabel">Gigs</span></button>
+  <button class="ni" onclick="nav('brain',this)"><span class="nicon">🧠</span><span class="nlabel">Brain</span></button>
+  <button class="ni" onclick="nav('savings',this)"><span class="nicon">💰</span><span class="nlabel">Savings</span></button>
+</nav>
+
+<script>
+/* ── CONFIG ── Edit these 5 lines ─────────────────────── */
+const CFG = {
+  apiKey:  'AIzaSyA2A1_cUv_6TeeVZRQdaEZtGzovCgtZUz8',
+  sheetId: '1URFtwJxwYKV4dYROLMXgssh8Mbgkcs6s4Fuq5B1mLkI',
+  formChores: 'https://docs.google.com/forms/d/e/1FAIpQLScFnpKLvnmNGIKzEP3v99fHwPFZJu-69WQsw5HEYpD256cBZw/viewform',
+  formGigs:   'https://docs.google.com/forms/d/e/1FAIpQLSdsk1xkKRlgakc5dSektF060aNxjGrG7RwIk4YxHUk_TsXa7g/viewform',
+  formBrain:  'https://docs.google.com/forms/d/e/1FAIpQLSf1hyS8eU0PqIl74ro2SypKULgGhGVK5ixaSYb6O0-eFXRK3w/viewform',
+
+/* ── DEMO DATA ─────────────────────────────────────────── */
+const DEMO = {
+  children: {
+    z:{chores:5,total:7,balance:18.00},
+    s:{chores:5,total:5,balance:9.00},
+    a:{chores:4,total:4,balance:12.00},
+  },
+  choreDetails: {
+    z:[
+      {name:'Take trash out',freq:'Daily',done:true},
+      {name:'Bring cans to curb',freq:'Tuesdays',done:true},
+      {name:'Mow front lawn',freq:'Weekly',done:false},
+      {name:'Make bed',freq:'Daily',done:true},
+      {name:'Clean bedroom',freq:'Daily',done:true},
+      {name:'Personal laundry',freq:'Weekends',done:true},
+      {name:'Help when asked',freq:'As needed',done:false},
+    ],
+    s:[
+      {name:'Sweep kitchen',freq:'Daily',done:true},
+      {name:'Put dishes away',freq:'Daily',done:true},
+      {name:'Make bed',freq:'Daily',done:true},
+      {name:'Personal laundry',freq:'Weekends',done:true},
+      {name:'Help with cooking',freq:'As needed',done:true},
+    ],
+    a:[
+      {name:'Clean kitchen table',freq:'Daily',done:true},
+      {name:'Set table for dinner',freq:'Daily',done:true},
+      {name:'Make bed',freq:'Daily',done:true},
+      {name:'Help with cooking',freq:'As needed',done:true},
+    ],
+  },
+  gigs: {
+    small:[
+      {name:'Sweep porch or garage',price:2,claimedBy:null},
+      {name:'Wipe windows / mirrors',price:2,claimedBy:null},
+      {name:'Organize shoes / backpacks',price:1,claimedBy:null},
+      {name:'Fold towels',price:2,claimedBy:null},
+      {name:'Carry groceries in',price:2,claimedBy:null},
+      {name:'Clean out vehicle trash',price:2,claimedBy:'Sophia'},
+      {name:'Pick up yard sticks / debris',price:2,claimedBy:null},
+      {name:'Wipe kitchen cabinets',price:2,claimedBy:null},
+      {name:'Organize snack shelf',price:3,claimedBy:null},
+      {name:'Clean dining table / chairs',price:2,claimedBy:null},
+      {name:'Vacuum one room',price:2,claimedBy:null},
+      {name:'Help prep lunches',price:3,claimedBy:'Alyssa'},
+      {name:'Sweep kitchen floor',price:2,claimedBy:null},
+      {name:'Dust living room',price:2,claimedBy:null},
+      {name:'Help unload groceries',price:2,claimedBy:null},
+      {name:'Organize game shelf / bookshelf',price:3,claimedBy:null},
+      {name:'Match / fold socks',price:1,claimedBy:null},
+      {name:'Clean microwave',price:2,claimedBy:null},
+    ],
+    medium:[
+      {name:'Wash vehicle exterior',price:5,claimedBy:'Zachary'},
+      {name:'Vacuum vehicle interior',price:5,claimedBy:null},
+      {name:'Organize pantry',price:5,claimedBy:null},
+      {name:'Pull weeds, 20–30 min',price:5,claimedBy:null},
+      {name:'Deep clean bathroom',price:6,claimedBy:null},
+      {name:'Mop floors',price:5,claimedBy:null},
+      {name:'Help cook dinner',price:5,claimedBy:null},
+      {name:'Meal prep assistance',price:5,claimedBy:null},
+      {name:'Yard cleanup',price:6,claimedBy:null},
+      {name:'Garage organization',price:6,claimedBy:null},
+      {name:'Clean refrigerator shelves',price:5,claimedBy:null},
+      {name:'Organize storage closet',price:5,claimedBy:null},
+      {name:'Vacuum entire floor',price:6,claimedBy:null},
+      {name:'Wash bedding',price:5,claimedBy:null},
+      {name:'Clean patio / deck area',price:5,claimedBy:null},
+      {name:'Organize laundry room',price:4,claimedBy:null},
+      {name:'Help move heavy items',price:4,claimedBy:null},
+      {name:'Deep clean bedroom',price:6,claimedBy:null},
+    ],
+    large:[
+      {name:'Full vehicle detail help',price:10,claimedBy:null},
+      {name:'Garage deep clean',price:10,claimedBy:null},
+      {name:'Yard project help',price:10,claimedBy:null},
+      {name:'Clean and organize storage',price:12,claimedBy:null},
+      {name:'Assist with home project',price:10,claimedBy:null},
+      {name:'Deep clean kitchen',price:12,claimedBy:null},
+      {name:'Organize large family area',price:10,claimedBy:null},
+      {name:'Wash multiple vehicles',price:12,claimedBy:null},
+      {name:'Help with landscaping project',price:15,claimedBy:null},
+      {name:'Major decluttering project',price:12,claimedBy:null},
+    ],
+  },
+  brain: {
+    'Reading & Learning':[
+      {icon:'📖',name:'Read 20 pages',desc:'Any book of your choice.',reward:2},
+      {icon:'📚',name:'Finish a chapter book',desc:'Complete a full chapter book. Share what it was about.',reward:8},
+      {icon:'📰',name:'Read nonfiction article + explain',desc:'Read any nonfiction article and explain the key points to a parent.',reward:2},
+      {icon:'📄',name:'Read educational article',desc:'Magazine, website, or printed article on any real topic.',reward:1},
+      {icon:'🔍',name:'Research a topic + teach the family',desc:'Pick any subject, research it, and present what you learned.',reward:5},
+      {icon:'🔤',name:'Learn 5 new vocabulary words',desc:'Find 5 words you don\'t know. Write definitions and use them in sentences.',reward:1},
+      {icon:'🎬',name:'Educational documentary',desc:'Watch a documentary and share 3 things you learned.',reward:3},
+      {icon:'🎤',name:'TED Talk + summary',desc:'Watch any TED Talk and write or say a summary of the main idea.',reward:2},
+      {icon:'🎧',name:'Podcast episode + takeaway',desc:'Listen to an educational podcast and share your biggest takeaway.',reward:2},
+      {icon:'🏛️',name:'Learn historical event + explain',desc:'Pick any historical event, research it, and explain it to the family.',reward:3},
+    ],
+    'Life Skills':[
+      {icon:'🍳',name:'Learn to cook a simple meal',desc:'Plan and cook a real meal without full help.',reward:5},
+      {icon:'🥞',name:'Make breakfast independently',desc:'Make a full breakfast for yourself without help.',reward:4},
+      {icon:'🔪',name:'Learn basic kitchen safety',desc:'Demonstrate proper knife handling, hot surfaces, and hygiene.',reward:2},
+      {icon:'👕',name:'Learn a laundry skill / fabric care',desc:'Complete a full laundry cycle correctly. Learn fabric labels.',reward:3},
+      {icon:'🧹',name:'Learn stain removal',desc:'Research and correctly treat a real stain.',reward:2},
+      {icon:'🔧',name:'Learn basic tool safety',desc:'Learn how to safely use hammer, screwdriver, tape measure.',reward:3},
+      {icon:'🚗',name:'Learn how to change a tire',desc:'Learn the full process. Walk a parent through the steps.',reward:3},
+      {icon:'💰',name:'Learn budgeting basics',desc:'Learn what a budget is and why it matters. Create a simple example.',reward:4},
+      {icon:'🛒',name:'Compare prices at grocery store',desc:'During a real shopping trip, compare prices on 5 items.',reward:2},
+      {icon:'📊',name:'Build a spending / saving plan',desc:'Create a written plan for $20: spend, save, and give.',reward:4},
+      {icon:'🩹',name:'Learn basic first aid',desc:'Learn how to treat a cut, burn, or apply a bandage.',reward:3},
+      {icon:'📦',name:'Learn to organize a space',desc:'Pick any space, declutter and organize it using a real system.',reward:3},
+    ],
+    'Mindset & Personal Growth':[
+      {icon:'✨',name:'Write 10 "I AM" statements',desc:'Write 10 positive identity statements. Read them aloud.',reward:1},
+      {icon:'🙏',name:'Gratitude journal for 5 days',desc:'Write 3 things you are grateful for each day for 5 days.',reward:3},
+      {icon:'🎯',name:'Write weekly goals',desc:'Write 3 realistic goals for the week. Review at week\'s end.',reward:2},
+      {icon:'💭',name:'Reflect on a mistake + lesson',desc:'Write honestly about a mistake and what you learned from it.',reward:2},
+      {icon:'🤝',name:'Practice conflict resolution',desc:'Have a real or role-play conflict resolution discussion.',reward:3},
+      {icon:'💌',name:'Write encouraging note to family',desc:'Write a genuine, thoughtful note to a sibling or family member.',reward:1},
+      {icon:'🪞',name:'Identify strengths + growth areas',desc:'Write 3 strengths and 3 areas where you want to grow.',reward:2},
+      {icon:'🖼️',name:'Create a vision / goals board',desc:'Design a visual board showing your goals and who you want to become.',reward:5},
+      {icon:'💬',name:'Positive self-talk exercise',desc:'Complete a guided self-talk exercise and reflect on it.',reward:2},
+      {icon:'📓',name:'Journal emotional reflection',desc:'Write a journal entry about how you are feeling and why.',reward:2},
+    ],
+    'Health & Fitness':[
+      {icon:'💪',name:'20-minute workout',desc:'Complete a real 20-minute workout. Write what you did.',reward:1},
+      {icon:'🧘',name:'Stretching / yoga session',desc:'Complete a stretching or yoga session of at least 15 minutes.',reward:1},
+      {icon:'🚴',name:'Outdoor activity / bike ride',desc:'Spend at least 30 minutes outside doing a physical activity.',reward:2},
+      {icon:'🥗',name:'Help cook a healthy meal',desc:'Help plan and cook a balanced, nutritious meal.',reward:3},
+      {icon:'🍎',name:'Learn healthy snack prep',desc:'Prepare 3 healthy snacks on your own. Learn why they\'re good.',reward:2},
+      {icon:'🏆',name:'Complete weekly exercise goal',desc:'Set a fitness goal at the start of the week and achieve it.',reward:5},
+      {icon:'🚶',name:'Family walk participation',desc:'Join and complete a family walk without complaint.',reward:1},
+      {icon:'🥦',name:'Learn about nutrition basics',desc:'Research macronutrients or food groups. Explain what you learned.',reward:2},
+    ],
+    'Creativity & Entrepreneurship':[
+      {icon:'💡',name:'Create useful family org idea',desc:'Identify a real family problem and design a solution. Present it.',reward:3},
+      {icon:'➕',name:'Suggest a valuable new gig',desc:'Propose a new gig with real value. Explain the work and fair pay.',reward:2},
+      {icon:'🎉',name:'Design a family game night',desc:'Plan and run a family game night or activity start to finish.',reward:3},
+      {icon:'🎨',name:'Learn basic Canva / design',desc:'Complete a real Canva project with layering, fonts, and layout.',reward:3},
+      {icon:'📋',name:'Create family cleaning checklist',desc:'Design a practical weekly cleaning checklist the family can use.',reward:2},
+      {icon:'💸',name:'Research a money-making idea',desc:'Research one real way a kid your age could earn money. Present it.',reward:4},
+      {icon:'⌨️',name:'Learn basic typing / computer skill',desc:'Practice typing for 20 min or learn a real computer skill.',reward:2},
+      {icon:'🎙️',name:'Presentation / public speaking',desc:'Prepare and deliver a 2-minute talk on any topic to the family.',reward:3},
+    ],
+  },
+  payouts:[
+    {who:'z',name:'Zachary',gig:'Wash vehicle exterior',date:'May 25',amount:5.00},
+    {who:'s',name:'Sophia', gig:'Clean out vehicle trash',date:'May 24',amount:2.00},
+    {who:'a',name:'Alyssa', gig:'Help prep lunches',date:'May 24',amount:3.00},
+    {who:'z',name:'Zachary',gig:'TED Talk + summary',date:'May 23',amount:2.00},
+    {who:'s',name:'Sophia', gig:'Gratitude journal 5 days',date:'May 22',amount:3.00},
+    {who:'a',name:'Alyssa', gig:'Read 20 pages',date:'May 21',amount:2.00},
+  ],
+};
+
+/* ── STATE ─────────────────────────────────────────────── */
+let DATA = DEMO;
+let openDetails = {z:false,s:false,a:false};
+let gigFilter = 'all';
+let brainFilter = 'all';
+const isDemo = CFG.apiKey === 'YOUR_API_KEY_HERE';
+
+/* ── INIT ──────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', async () => {
+  setWeek();
+  document.getElementById('lnk-chores').href = CFG.formChores;
+  document.getElementById('lnk-gigs').href   = CFG.formGigs;
+  document.getElementById('lnk-brain').href  = CFG.formBrain;
+  if(isDemo) document.getElementById('api-banner').classList.add('show');
+  if(!isDemo){
+    try{ DATA = await fetchSheet(); }
+    catch(e){ console.error(e); document.getElementById('api-banner').classList.add('show'); }
+  }
+  renderAll();
+});
+
+/* ── RENDER ─────────────────────────────────────────────── */
+function renderAll(){
+  renderChildren(); renderChores(); renderGigs(); renderBrain(); renderSavings();
+}
+
+function renderChildren(){
+  ['z','s','a'].forEach(k=>{
+    const c=DATA.children[k];
+    const pct=Math.round(c.chores/c.total*100);
+    const on=c.chores>=c.total;
+    document.getElementById(`ch-${k}`).textContent=`${c.chores}/${c.total}`;
+    document.getElementById(`bar-${k}`).style.width=pct+'%';
+    const pb=document.getElementById(`priv-${k}`);
+    pb.textContent=on?'On':'Off'; pb.className='badge '+(on?'on':'off');
+    document.getElementById(`bal-${k}`).textContent='$'+c.balance.toFixed(2);
+    document.getElementById(`sv-${k}`).textContent='$'+c.balance.toFixed(2);
+  });
+}
+
+function renderChores(){
+  ['z','s','a'].forEach(k=>{
+    document.getElementById(`cl-${k}`).innerHTML=
+      DATA.choreDetails[k].map(c=>`
+        <div class="ci">
+          <div class="ck ${c.done?'done':''}">${c.done?'✓':''}</div>
+          <span class="ct">${c.name}</span>
+          <span class="cf">${c.freq}</span>
+        </div>`).join('');
+  });
+}
+
+let allGigs=[];
+function renderGigs(){
+  allGigs=[];
+  ['small','medium','large'].forEach(size=>{
+    (DATA.gigs[size]||[]).forEach(g=>allGigs.push({...g,size}));
+  });
+  displayGigs();
+}
+
+function displayGigs(){
+  const f=gigFilter;
+  let filtered=allGigs;
+  if(f==='open') filtered=allGigs.filter(g=>!g.claimedBy);
+  else if(f!=='all') filtered=allGigs.filter(g=>g.size===f);
+
+  // Group by size for display
+  const groups={small:[],medium:[],large:[]};
+  filtered.forEach(g=>{ if(groups[g.size]) groups[g.size].push(g); });
+  const labels={small:'Small gigs · $1–3',medium:'Medium gigs · $4–7',large:'Large gigs · $8–15'};
+
+  let html='';
+  ['small','medium','large'].forEach(size=>{
+    if(!groups[size].length) return;
+    if(f==='all'||f==='open') html+=`<div class="gsec">${labels[size]}</div>`;
+    groups[size].forEach(g=>{
+      const who=g.claimedBy; const wi=who?who[0].toLowerCase():null;
+      const sc=who?`c${wi}`:'open';
+      const st=who||'Open';
+      html+=`<div class="gcard ${who?'claimed':''}">
+        <div class="gdot ${g.size}"></div>
+        <div class="ginfo"><div class="gname">${g.name}</div><div class="gmeta">${cap(g.size)}</div></div>
+        <div class="gright"><span class="gprice">$${g.price}</span><span class="schip ${sc}">${st}</span></div>
+      </div>`;
+    });
+  });
+  document.getElementById('gig-list').innerHTML=html||'<div class="empty">No gigs match this filter.</div>';
+}
+
+function filterGigs(type,el){
+  gigFilter=type;
+  document.querySelectorAll('#pg-gigs .fchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on'); displayGigs();
+}
+
+const BRAIN_CATS=Object.keys(DEMO.brain);
+const CAT_COLORS={
+  'Reading & Learning':'var(--blue)',
+  'Life Skills':'var(--green)',
+  'Mindset & Personal Growth':'var(--purple)',
+  'Health & Fitness':'var(--teal)',
+  'Creativity & Entrepreneurship':'var(--amber)',
+};
+const CAT_BG={
+  'Reading & Learning':'var(--blue-bg)',
+  'Life Skills':'var(--green-bg)',
+  'Mindset & Personal Growth':'var(--purple-bg)',
+  'Health & Fitness':'var(--teal-bg)',
+  'Creativity & Entrepreneurship':'var(--amber-bg)',
+};
+
+function renderBrain(){
+  // Filters
+  const frow=document.getElementById('brain-filters');
+  frow.innerHTML='<div class="fchip on" onclick="filterBrain(\'all\',this)">All</div>'+
+    BRAIN_CATS.map(cat=>`<div class="fchip" onclick="filterBrain('${cat}',this)">${cat.split(' ')[0]}</div>`).join('');
+  displayBrain();
+}
+
+function displayBrain(){
+  const cats=brainFilter==='all'?BRAIN_CATS:[brainFilter];
+  let html='';
+  cats.forEach(cat=>{
+    const items=(DATA.brain[cat]||[]);
+    if(!items.length) return;
+    html+=`<div class="bcat" style="color:${CAT_COLORS[cat]}">${cat}</div>`;
+    items.forEach(b=>{
+      html+=`<div class="bcard">
+        <div class="bicon" style="background:${CAT_BG[cat]}">${b.icon}</div>
+        <div class="binfo"><div class="bname">${b.name}</div><div class="bdesc">${b.desc}</div></div>
+        <div class="breward">$${b.reward}</div>
+      </div>`;
+    });
+  });
+  document.getElementById('brain-list').innerHTML=html;
+}
+
+function filterBrain(cat,el){
+  brainFilter=cat;
+  document.querySelectorAll('#pg-brain .fchip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on'); displayBrain();
+}
+
+function renderSavings(){
+  const cc={z:'var(--blue-bg)',s:'var(--purple-bg)',a:'var(--pink-bg)'};
+  const ct={z:'var(--blue)',   s:'var(--purple)',   a:'var(--pink)'};
+  document.getElementById('payout-hist').innerHTML=DATA.payouts.map(p=>`
+    <div class="prow2">
+      <div class="pwho" style="background:${cc[p.who]};color:${ct[p.who]}">${p.name[0]}</div>
+      <span class="pwhat">${p.gig}</span>
+      <span class="pdate">${p.date}</span>
+      <span class="pamt">+$${p.amount.toFixed(2)}</span>
+    </div>`).join('');
+}
+
+/* ── NAVIGATION ─────────────────────────────────────────── */
+function nav(page,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(b=>b.classList.remove('on'));
+  document.getElementById('pg-'+page).classList.add('on');
+  btn.classList.add('on'); window.scrollTo(0,0);
+}
+
+function toggleDetail(k){
+  openDetails[k]=!openDetails[k];
+  document.getElementById(`dp-${k}`).classList.toggle('open',openDetails[k]);
+  document.getElementById(`card-${k}`).classList.toggle('open',openDetails[k]);
+}
+
+/* ── GOOGLE SHEETS API ──────────────────────────────────── */
+async function fetchSheet(){
+  const base=`https://sheets.googleapis.com/v4/spreadsheets/${CFG.sheetId}/values`;
+  const k=`?key=${CFG.apiKey}`;
+  const [dash,gig,brain]=await Promise.all([
+    fetch(`${base}/Dashboard${k}`).then(r=>r.json()),
+    fetch(`${base}/${encodeURIComponent('Regular Gigs')}${k}`).then(r=>r.json()),
+    fetch(`${base}/${encodeURIComponent('Brain Gigs')}${k}`).then(r=>r.json()),
+  ]);
+
+  const dv=dash.values||[];
+  const pc=row=>({
+    chores:parseInt(row[1])||0,
+    total: parseInt(row[2])||1,
+    balance:parseFloat((row[3]||'0').replace('$',''))||0,
+  });
+  const children={z:pc(dv[1]||[]),s:pc(dv[2]||[]),a:pc(dv[3]||[])};
+
+  // Parse gigs into size buckets
+  const gigs={small:[],medium:[],large:[]};
+  (gig.values||[]).slice(1).forEach(r=>{
+    if(!r[0]) return;
+    const price=parseFloat((r[2]||'0').replace('$',''))||0;
+    const size=price<=3?'small':price<=7?'medium':'large';
+    gigs[size].push({name:r[0],price,size,claimedBy:(r[4]&&r[4]!=='Not Claimed')?r[4]:null});
+  });
+
+  // Parse brain gigs (Icon, Name, Description, Reward, Category)
+  const brain2={};
+  (brain.values||[]).slice(1).forEach(r=>{
+    if(!r[1]) return;
+    const cat=r[4]||'Reading & Learning';
+    if(!brain2[cat]) brain2[cat]=[];
+    brain2[cat].push({icon:r[0]||'📚',name:r[1],desc:r[2]||'',reward:parseFloat((r[3]||'0').replace('$',''))||0});
+  });
+
+  return {
+    children,
+    choreDetails:DEMO.choreDetails,
+    gigs:Object.keys(gigs).some(k=>gigs[k].length)?gigs:DEMO.gigs,
+    brain:Object.keys(brain2).length?brain2:DEMO.brain,
+    payouts:DEMO.payouts,
+  };
+}
+
+/* ── UTILS ──────────────────────────────────────────────── */
+function cap(s){return s.charAt(0).toUpperCase()+s.slice(1)}
+function setWeek(){
+  const now=new Date(),day=now.getDay(),diff=day===0?6:day-1;
+  const mon=new Date(now); mon.setDate(now.getDate()-diff); mon.setHours(0,0,0,0);
+  const sun=new Date(mon); sun.setDate(mon.getDate()+6);
+  const fmt=d=>d.toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  document.getElementById('week-lbl').textContent=`${fmt(mon)} – ${fmt(sun)}`;
+}
+</script>
+</body>
+</html>
