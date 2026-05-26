@@ -615,13 +615,20 @@ async function fetchSheet(){
     gigs[size].push({name:r[0],price,size,claimedBy:(r[4]&&r[4]!=='Not Claimed')?r[4]:null});
   });
 
-  // Parse brain gigs (Icon, Name, Description, Reward, Category)
+  // Parse brain gigs — handles category header rows (col A = category, col B empty)
+  const KNOWN_CATS=['Reading & Learning','Life Skills','Mindset & Personal Growth','Health & Fitness','Creativity & Entrepreneurship'];
   const brain2={};
-  (brain.values||[]).slice(1).forEach(r=>{
-    if(!r[1]) return;
-    const cat=r[4]||'Reading & Learning';
+  let currentCat='Reading & Learning';
+  (brain.values||[]).forEach(r=>{
+    if(!r||!r.length) return;
+    const colA=String(r[0]||'').trim();
+    const colB=String(r[1]||'').trim();
+    if(KNOWN_CATS.includes(colA)&&!colB){currentCat=colA;return;}
+    if(!colB) return;
+    const cat=(r[4]&&KNOWN_CATS.includes(String(r[4]).trim()))?String(r[4]).trim():currentCat;
     if(!brain2[cat]) brain2[cat]=[];
-    brain2[cat].push({icon:r[0]||'📚',name:r[1],desc:r[2]||'',reward:parseFloat((r[3]||'0').replace('$',''))||0});
+    const reward=parseFloat(String(r[3]||'0').replace('$','').replace(',',''))||0;
+    brain2[cat].push({icon:colA||'📚',name:colB,desc:String(r[2]||''),reward});
   });
 
   return {
